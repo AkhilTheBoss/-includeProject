@@ -202,18 +202,28 @@ router.get("/outcome-types", async (req, res) => {
     const typeTotals = {};
     for (const type of outcomeTypes) {
       const total = await User.aggregate([
-        { $match: { category: "expense", type } },
+        {
+          $match: {
+            token: req.headers.authorization.split(" ")[1],
+            category: "expense",
+            type
+          },
+        },
         { $group: { _id: null, total: { $sum: "$cost" } } },
       ]);
       typeTotals[type] = total.length > 0 ? total[0].total : 0;
     }
 
     const totalOutcome = await User.aggregate([
-      { $match: { category: "expense" } },
+      {
+        $match: {
+          token: req.headers.authorization.split(" ")[1],
+          category: "expense",
+        },
+      },
       { $group: { _id: null, total: { $sum: "$cost" } } },
     ]);
-    const totalOutcomeValue =
-      totalOutcome.length > 0 ? totalOutcome[0].total : 0;
+    const totalOutcomeValue = totalOutcome.length > 0 ? totalOutcome[0].total : 0;
 
     const percentages = {};
     for (const type of outcomeTypes) {
@@ -233,6 +243,7 @@ router.get("/outcome-types", async (req, res) => {
   }
 });
 
+
 router.get("/expenses-by-week", async (req, res) => {
   try {
     const today = moment();
@@ -249,7 +260,10 @@ router.get("/expenses-by-week", async (req, res) => {
     ];
     const data = Array(7).fill(0);
 
-    const allExpenses = await User.find({ category: "expense" });
+    const allExpenses = await User.find({
+      token: req.headers.authorization.split(" ")[1],
+      category: "expense"
+    });
 
     for (let i = 0; i < 7; i++) {
       const currentDate = startDate.clone().add(i, "days").format("YYYY-MM-DD");

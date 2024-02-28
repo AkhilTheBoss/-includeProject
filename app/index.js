@@ -4,7 +4,7 @@ const userRouter = require("./(api)/routes/user");
 const PORT = 3001;
 const cors = require("cors");
 const connectionString =
-  "mongodb+srv://khphan:testtry@balance.rpjud8f.mongodb.net/TestAPiDb";
+  "mongodb+srv://khphan:password1029@balance.rpjud8f.mongodb.net/TestAPiDb";
 
 const app = express();
 
